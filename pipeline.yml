@@ -11,10 +11,10 @@ jobs:
       image_resource:
         type: docker-image
         source: {repository: praqma/gh-pages}
-      inputs: 
+      inputs:
         - name: repository
         - name: gist
-      outputs: 
+      outputs:
         - name: site
       run:
         path: sh
@@ -27,35 +27,35 @@ jobs:
            git config --global user.name "praqma" && git add .
            git commit -m "updated gist"
     on_failure:
-      put: slack-alert 
+      put: slack-alert
       params:
         channel: '#general'
         text: |
-          The build failed. Please go correct it at: 
+          The build failed. Please go correct it at:
           http://192.168.100.4:8080//teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
           or at:
           http://192.168.100.4:8080//builds/$BUILD_ID
   - put: gist
-    params: 
+    params:
       repository: site
 
 
 - name: test-site
   public: true
-  plan: 
+  plan:
   - get: repository
     passed: [build-jekyll]
     trigger: true
   - task: curl-site
-    config: 
+    config:
       platform: linux
-      image_resource: 
+      image_resource:
         type: docker-image
-        source: 
+        source:
           repository: praqma/gh-pages
-      run: 
+      run:
         path: sh
-        args: 
+        args:
         - -exc
         - |
           apt-get update
@@ -100,28 +100,28 @@ jobs:
     params:
       repository: repository
       force: true
-  
-resources: 
+
+resources:
 - name: repository
   type: git
   source:
-    uri: https://github.com/Sharor/concourse-workshop.git
+    uri: https://github.com/nanohest/concourse-workshop.git
     branch: master
     username: {{github-username}}
     password: {{github-password}}
 
 - name: gist
-  type: git 
-  source: 
-    uri: https://gist.github.com/4b2015849c31bfb860c6a021ba9ed63a.git
+  type: git
+  source:
+    uri: https://gist.github.com/nanohest/672664c16913c5e3622178fab5838e2f
     branch: master
     username: {{github-username}}
     password: {{github-password}}
 
 - name: github-pages
   type: git
-  source: 
-    uri: https://github.com/Sharor/concourse-workshop.git
+  source:
+    uri: https://github.com/nanohest/concourse-workshop.git
     branch: gh-pages
     username: {{github-username}}
     password: {{github-password}}
